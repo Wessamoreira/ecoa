@@ -52,7 +52,11 @@ export function Layout() {
   const streak = useApp((s) => streakOf(s.days))
   const { pathname } = useLocation()
   const focus = pathname.startsWith('/estudar') || pathname.startsWith('/quiz')
-  useEffect(() => window.scrollTo(0, 0), [pathname])
+  // Corpo com chaves de propósito: no Chrome novo, scrollTo() retorna uma Promise,
+  // e o React trataria esse retorno como função de limpeza do efeito.
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [pathname])
 
   return (
     <div className="min-h-dvh lg:grid lg:grid-cols-[248px_1fr]">

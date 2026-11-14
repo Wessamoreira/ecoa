@@ -9,14 +9,17 @@ import '@fontsource/charis-sil/400-italic.css'
 import './index.css'
 import { App } from './app/App.tsx'
 import { Layout } from './app/Layout.tsx'
+import { RouteError } from './app/RouteError.tsx'
 import Home from './pages/Home.tsx'
 
 const router = createBrowserRouter([
   {
     element: <App />,
+    errorElement: <RouteError />,
     children: [
       {
         element: <Layout />,
+        errorElement: <RouteError />,
         children: [
           { index: true, element: <Home /> },
           { path: 'trilha/:moduleId', lazy: () => import('./pages/ModulePage.tsx').then((m) => ({ Component: m.default })) },
