@@ -1,0 +1,261 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ───────────── Tokens */
+:root {
+  --bg: #f3f5fa;
+  --surface: #ffffff;
+  --surface-2: #e9edf5;
+  --line: #dce1ec;
+  --ink: #12162b;
+  --muted: #5a6283;
+  --again: #d93b41;
+  --hard: #c97a10;
+  --good: #1f8f5a;
+  --easy: #2f74dc;
+  --accent: #3a5bff;
+  --accent-ink: #ffffff;
+  --radius-card: 22px;
+  --shadow: 0 1px 0 rgb(18 22 43 / 0.04), 0 12px 32px -12px rgb(18 22 43 / 0.18);
+  color-scheme: light;
+}
+.dark {
+  --bg: #0d1020;
+  --surface: #151931;
+  --surface-2: #1d2240;
+  --line: #2a3055;
+  --ink: #eef0fa;
+  --muted: #9aa1c4;
+  --again: #ff6b70;
+  --hard: #f2a93b;
+  --good: #3fcf8e;
+  --easy: #69a7ff;
+  --shadow: 0 1px 0 rgb(255 255 255 / 0.03), 0 18px 40px -16px rgb(0 0 0 / 0.6);
+  color-scheme: dark;
+}
+[data-mode='kids'] {
+  --accent: #ff8a1f;
+  --accent-ink: #2a1400;
+  --radius-card: 30px;
+}
+[data-mode='teen'] {
+  --accent: #e0367e;
+  --accent-ink: #ffffff;
+}
+[data-mode='adult'] {
+  --accent: #3a5bff;
+  --accent-ink: #ffffff;
+}
+.dark[data-mode='adult'] {
+  --accent: #6b85ff;
+  --accent-ink: #0b0f2a;
+}
+.dark[data-mode='teen'] {
+  --accent: #ff5c9d;
+  --accent-ink: #2a0013;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: color-mix(in oklab, var(--accent) 14%, transparent);
+  --color-again: var(--again);
+  --color-hard: var(--hard);
+  --color-good: var(--good);
+  --color-easy: var(--easy);
+  --font-display: 'Bricolage Grotesque Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Atkinson Hyperlegible Next', ui-sans-serif, system-ui, sans-serif;
+  --font-ipa: 'Charis SIL', 'Doulos SIL', 'Gentium Plus', 'Noto Serif', serif;
+  --radius-card: var(--radius-card);
+  --shadow-card: var(--shadow);
+}
+
+/* ───────────── Base */
+html {
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.5;
+  min-height: 100dvh;
+  overscroll-behavior-y: none;
+  -webkit-font-smoothing: antialiased;
+}
+[data-mode='kids'] body {
+  font-size: 17px;
+}
+h1,
+h2,
+h3,
+.font-display {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  letter-spacing: -0.02em;
+}
+button {
+  cursor: pointer;
+}
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 10px;
+}
+::selection {
+  background: color-mix(in oklab, var(--accent) 35%, transparent);
+}
+
+/* IPA com cara de verbete de dicionário */
+.ipa {
+  font-family: var(--font-ipa);
+  font-style: italic;
+  letter-spacing: 0.01em;
+}
+
+/* ───────────── Flip 3D */
+.flip-scene {
+  perspective: 1600px;
+}
+.flip-inner {
+  position: relative;
+  transform-style: preserve-3d;
+  width: 100%;
+  height: 100%;
+}
+.flip-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: var(--radius-card);
+}
+.flip-back {
+  transform: rotateY(180deg);
+}
+
+/* Linhas de ficha pautada no verso do card */
+.ruled {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 31px,
+    color-mix(in oklab, var(--line) 55%, transparent) 31px,
+    color-mix(in oklab, var(--line) 55%, transparent) 32px
+  );
+}
+
+/* Duotone nas capas: fotos livres de fontes diferentes ganham uma identidade só */
+.duotone {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: var(--accent);
+}
+.duotone > .duotone-photo {
+  filter: grayscale(1) contrast(1.15) brightness(1.05);
+  mix-blend-mode: multiply;
+  opacity: 0.92;
+}
+.dark .duotone > .duotone-photo {
+  mix-blend-mode: luminosity;
+  opacity: 0.55;
+}
+.duotone::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 30%, rgb(10 12 30 / 0.55));
+  pointer-events: none;
+}
+
+/* Palavra sendo falada (o "eco") */
+.echo-word {
+  border-radius: 6px;
+  transition: background-color 120ms ease, color 120ms ease;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+.echo-word[data-on='true'] {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+.echo-word[data-past='true'] {
+  color: color-mix(in oklab, var(--accent) 70%, var(--ink));
+}
+
+@keyframes ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+  100% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+.speaking-ring::before,
+.speaking-ring::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 2px solid var(--accent);
+  animation: ring 1.2s ease-out infinite;
+  pointer-events: none;
+}
+.speaking-ring::after {
+  animation-delay: 0.4s;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.safe-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ───────────── Impressão */
+@media print {
+  @page {
+    margin: 14mm;
+  }
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-sheet {
+    padding: 0 !important;
+  }
+  .print-avoid {
+    break-inside: avoid;
+  }
+}
