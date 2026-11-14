@@ -231,6 +231,21 @@ button {
   padding-top: env(safe-area-inset-top);
 }
 
+/* Altura real do cabeçalho mobile, incluindo a área do relógio/notch no app instalado.
+   Barras "grudadas" (busca, ações do módulo) usam este valor para ficar logo abaixo dele. */
+:root {
+  --safe-top: env(safe-area-inset-top, 0px);
+  --header-h: calc(56px + var(--safe-top));
+}
+.under-header {
+  top: var(--header-h);
+}
+@media (min-width: 1024px) {
+  .under-header {
+    top: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

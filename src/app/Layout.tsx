@@ -91,7 +91,7 @@ export function Layout() {
       <div className="min-w-0">
         {/* Topo (mobile) */}
         {!focus && (
-          <header className="no-print safe-top sticky top-0 z-30 flex items-center gap-2 border-b border-line/70 bg-bg/85 px-4 py-2.5 backdrop-blur-md lg:hidden">
+          <header className="no-print sticky top-0 z-30 flex h-[var(--header-h)] items-center gap-2 border-b border-line/70 bg-bg/85 px-4 pt-[var(--safe-top)] backdrop-blur-md lg:hidden">
             <NavLink to="/" className="flex items-center gap-2">
               <LogoMark size={28} />
               <span className="font-display text-xl font-bold">Ecoa</span>
@@ -105,7 +105,7 @@ export function Layout() {
           </header>
         )}
 
-        <main className={cx('mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-10', focus ? 'pt-3 pb-8' : 'pt-5 pb-28 lg:py-10')}>
+        <main className={cx('mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-10', focus ? 'pt-[calc(0.75rem+var(--safe-top))] pb-8 lg:pt-6' : 'pt-5 pb-28 lg:py-10')}>
           <Outlet />
         </main>
       </div>

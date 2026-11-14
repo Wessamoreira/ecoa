@@ -89,7 +89,7 @@ export default function ModulePage() {
         </header>
       )}
 
-      <div className="sticky top-[53px] z-20 -mx-4 mt-4 flex gap-2 overflow-x-auto bg-bg/90 px-4 py-2 backdrop-blur no-scrollbar lg:top-0 lg:mx-0 lg:px-0">
+      <div className="under-header sticky z-20 -mx-4 mt-4 flex gap-2 overflow-x-auto bg-bg/90 px-4 py-2 backdrop-blur no-scrollbar lg:mx-0 lg:px-0">
         <Button onClick={() => navigate(`/estudar?m=${m.id}`)}>
           <Layers size={18} /> {seen < m.cards.length ? `Estudar · ${m.cards.length - seen} novos` : due ? `Revisar ${due}` : 'Revisar módulo'}
         </Button>

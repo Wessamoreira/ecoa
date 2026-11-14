@@ -63,7 +63,7 @@ export default function Dictionary() {
     <div>
       <PageHeader eyebrow={`Modo ${info.label} · ${all.length} entradas`} title="Dicionário" />
 
-      <div className="sticky top-[53px] z-20 -mx-4 bg-bg/92 px-4 pb-3 pt-1 backdrop-blur lg:top-0 lg:mx-0 lg:px-0">
+      <div className="under-header sticky z-20 -mx-4 bg-bg/92 px-4 pb-3 pt-2 backdrop-blur lg:mx-0 lg:px-0">
         <label className="relative block">
           <Search size={19} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted" />
           <input
