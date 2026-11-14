@@ -106,6 +106,17 @@ export default function Study() {
   }, [flip, rate, flipped, card, say, navigate])
 
   const done = total.current - queue.length
+
+  // Classifica o que ainda falta: novo (nunca visto), aprendendo (estado 1/3 do FSRS) ou revisão (estado 2)
+  const srsNow = useApp((s) => s.srs)
+  const kindOf = (c: Card): 'new' | 'learning' | 'review' => {
+    const st = srsNow[c.id]
+    if (!st) return 'new'
+    return st.state === 2 ? 'review' : 'learning'
+  }
+  const remaining = { new: 0, learning: 0, review: 0 }
+  for (const c of queue) remaining[kindOf(c)]++
+  const currentKind = card ? kindOf(card) : undefined
   const title = moduleId ? moduleById.get(moduleId)?.title : favoritesOnly ? 'Favoritos' : 'Revisão do dia'
 
   if (!initial.queue.length) return <EmptyState moduleId={moduleId} />
@@ -122,6 +133,26 @@ export default function Study() {
           <Bar value={done / total.current} className="mt-1.5" />
         </div>
         <span className="font-display text-sm font-bold tabular-nums text-muted">{done}/{total.current}</span>
+      </div>
+
+      {/* O que falta nesta sessão (como no Anki): o card atual fica sublinhado */}
+      <div className="mt-1 flex flex-wrap items-center justify-center gap-1.5 text-xs font-semibold text-muted" aria-label="Cards restantes nesta sessão">
+        {(
+          [
+            ['new', 'Novos', 'var(--easy)'],
+            ['learning', 'Aprendendo', 'var(--again)'],
+            ['review', 'Revisões', 'var(--good)'],
+          ] as const
+        ).map(([k, label, color]) => (
+          <span
+            key={k}
+            title={currentKind === k ? 'Tipo do card atual' : undefined}
+            className={cx('inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 transition', currentKind === k ? 'bg-surface text-ink shadow-card' : '')}
+          >
+            <span className="size-2 rounded-full" style={{ background: color }} />
+            {label} <b className="tabular-nums text-ink">{remaining[k]}</b>
+          </span>
+        ))}
       </div>
 
       <div className="relative mt-2">
