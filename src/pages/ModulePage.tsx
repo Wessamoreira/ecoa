@@ -11,6 +11,21 @@ import { AudioButton, SpeakText } from '../components/Audio.tsx'
 import { CardDetails } from '../components/CardContent.tsx'
 import { Illustration } from '../components/Illustration.tsx'
 import { Button, LevelBadge, Sheet } from '../components/ui.tsx'
+import { DialoguePlayer } from '../components/DialoguePlayer.tsx'
+import { ModuleArt } from '../components/ModuleArt.tsx'
+import type { Module } from '../data/index.ts'
+
+/** O que o módulo contém, em uma linha */
+function ModuleMeta({ m, light }: { m: Module; light?: boolean }) {
+  const items = [`${m.cards.length} cards`, `${m.lesson.length} ${m.lesson.length === 1 ? 'explicação' : 'explicações'}`, m.dialogue && 'diálogo com áudio']
+  return (
+    <p className={cx('mt-1 flex flex-wrap gap-1.5 text-xs font-bold', light ? 'text-white/90' : 'text-muted')}>
+      {items.filter(Boolean).map((t) => (
+        <span key={t as string} className={cx('rounded-full px-2.5 py-1', light ? 'bg-white/15 backdrop-blur' : 'bg-surface-2')}>{t}</span>
+      ))}
+    </p>
+  )
+}
 
 export default function ModulePage() {
   const { moduleId = '' } = useParams()
@@ -45,18 +60,34 @@ export default function ModulePage() {
         <ArrowLeft size={16} /> Voltar
       </button>
 
-      <header className={cx('relative overflow-hidden rounded-[28px]', photo ? 'duotone min-h-[240px] text-white' : 'bg-accent-soft')}>
-        {photo && <img src={photo.src} alt="" className="duotone-photo absolute inset-0 size-full object-cover" />}
-        <div className="relative z-10 flex h-full min-h-[240px] flex-col justify-end gap-2 p-6 sm:p-8">
-          <Illustration emoji={m.emoji} size={kids ? 110 : 76} className="mb-1 drop-shadow-[0_10px_14px_rgb(0_0_0/0.3)]" />
-          <div className="flex items-center gap-2">
-            <LevelBadge level={m.level} className={photo ? '!bg-white/90 !text-[#12162b]' : ''} />
-            <span className={cx('text-xs font-bold uppercase tracking-[0.14em]', photo ? 'text-white/80' : 'text-muted')}>{levelName} · {m.category}</span>
+      {photo ? (
+        <header className="duotone relative min-h-[260px] overflow-hidden rounded-[28px] text-white">
+          <img src={photo.src} alt="" className="duotone-photo absolute inset-0 size-full object-cover" />
+          <div className="relative z-10 flex h-full min-h-[260px] flex-col justify-end gap-2 p-6 sm:p-8">
+            <Illustration emoji={m.emoji} size={76} className="mb-1 drop-shadow-[0_10px_14px_rgb(0_0_0/0.3)]" />
+            <div className="flex items-center gap-2">
+              <LevelBadge level={m.level} className="!bg-white/90 !text-[#12162b]" />
+              <span className="text-xs font-bold uppercase tracking-[0.14em] text-white/80">{levelName} · {m.category}</span>
+            </div>
+            <h1 className="text-[clamp(2rem,6vw,3.2rem)] font-bold leading-[1]">{m.title}</h1>
+            <p className="text-lg text-white/85">{m.subtitle}</p>
+            <ModuleMeta m={m} light />
           </div>
-          <h1 className="text-[clamp(2rem,6vw,3.2rem)] font-bold leading-[1]">{m.title}</h1>
-          <p className={cx('text-lg', photo ? 'text-white/85' : 'text-muted')}>{m.subtitle}</p>
-        </div>
-      </header>
+        </header>
+      ) : (
+        <header className="overflow-hidden rounded-[28px] border border-line bg-surface sm:grid sm:grid-cols-[1fr_minmax(240px,42%)]">
+          <ModuleArt m={m} size="lg" className="h-56 sm:order-2 sm:h-full sm:min-h-[280px]" />
+          <div className="flex flex-col justify-end gap-2 p-6 sm:p-8">
+            <div className="flex items-center gap-2">
+              <LevelBadge level={m.level} />
+              <span className="text-xs font-bold uppercase tracking-[0.14em] text-muted">{levelName} · {m.category}</span>
+            </div>
+            <h1 className="text-[clamp(2rem,6vw,3.2rem)] font-bold leading-[1]">{m.title}</h1>
+            <p className="text-lg text-muted">{m.subtitle}</p>
+            <ModuleMeta m={m} />
+          </div>
+        </header>
+      )}
 
       <div className="sticky top-[53px] z-20 -mx-4 mt-4 flex gap-2 overflow-x-auto bg-bg/90 px-4 py-2 backdrop-blur no-scrollbar lg:top-0 lg:mx-0 lg:px-0">
         <Button onClick={() => navigate(`/estudar?m=${m.id}`)}>
@@ -71,9 +102,9 @@ export default function ModulePage() {
       </div>
 
       {/* Lição */}
-      <section className="mt-6 grid gap-4 lg:grid-cols-2">
+      <section className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
         {m.lesson.map((s, i) => (
-          <article key={i} className={cx('rounded-[24px] border border-line bg-surface p-5 sm:p-6', s.table && 'lg:col-span-2')}>
+          <article key={i} className={cx('min-w-0 rounded-[24px] border border-line bg-surface p-5 sm:p-6', s.table && 'lg:col-span-2')}>
             <h2 className="flex items-center gap-2 text-xl font-bold">
               <BookOpen size={18} className="text-accent" /> {s.title}
             </h2>
@@ -110,6 +141,12 @@ export default function ModulePage() {
         ))}
       </section>
 
+      {m.dialogue && (
+        <div className="mt-8">
+          <DialoguePlayer d={m.dialogue} />
+        </div>
+      )}
+
       {/* Cards */}
       <section className="mt-8">
         <h2 className="mb-3 text-xl font-bold">
@@ -145,7 +182,7 @@ export default function ModulePage() {
 
       <Sheet open={!!open} onClose={() => setOpen(null)} title={open?.term}>
         {open && (
-          <div className="p-5 pt-6 sm:p-7">
+          <div className="p-5 pt-16 sm:p-7 sm:pt-16">
             <CardDetails card={open} kids={kids} />
           </div>
         )}

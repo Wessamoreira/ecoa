@@ -6,6 +6,7 @@ import { useApp } from '../store/useApp.ts'
 import { AudioButton, HumanAudio, SpeakText } from './Audio.tsx'
 import { PronunciationCoach } from './Coach.tsx'
 import { Illustration } from './Illustration.tsx'
+import { RealPhotos } from './RealPhotos.tsx'
 import { LevelBadge } from './ui.tsx'
 
 export function FavoriteButton({ cardId, className }: { cardId: string; className?: string }) {
@@ -59,6 +60,15 @@ export function CardFront({ card, kids }: { card: Card; kids?: boolean }) {
   )
 }
 
+/** Só vale buscar foto para coisas concretas (substantivos de vocabulário) */
+function photoQuery(card: Card): string | null {
+  const mod = moduleById.get(card.moduleId)
+  const concrete = card.pos?.includes('substantivo') || (mod?.category === 'Vocabulário' && !card.pos?.match(/verbo|adjetivo|advérbio|expressão|gíria|phrasal|collocation/))
+  if (!concrete) return null
+  const q = (card.lookup ?? card.term.split(/\s*[/·]\s*/)[0]).replace(/\(.*?\)/g, '').trim()
+  return q && q.split(' ').length <= 3 ? q : null
+}
+
 /** Verso / detalhe completo: tradução, formas, exemplos contrastivos, dica e treino de fala */
 export function CardDetails({ card, showHeader = true, kids }: { card: Card; showHeader?: boolean; kids?: boolean }) {
   const forms = card.forms?.filter((f) => f.label !== 'Infinitivo' || card.pos?.startsWith('verbo'))
@@ -80,6 +90,8 @@ export function CardDetails({ card, showHeader = true, kids }: { card: Card; sho
       )}
 
       <HumanAudio word={card.lookup ?? (card.term.includes(' ') ? undefined : card.term.toLowerCase())} />
+
+      {!kids && photoQuery(card) && <RealPhotos query={photoQuery(card)!} />}
 
       {forms && forms.length > 0 && (
         <section>

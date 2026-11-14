@@ -1,4 +1,4 @@
-import type { Card, Example, Form, LessonSection, Module } from './types.ts'
+import type { Card, Dialogue, Example, Form, LessonSection, Module } from './types.ts'
 
 export type Ex = [en: string, pt: string, tag?: string]
 type Draft = Omit<Card, 'id' | 'moduleId'>
@@ -67,6 +67,17 @@ export const sec = (title: string, body: string, table?: string[][], examples?: 
   table,
   examples: examples ? ex(examples) : undefined,
 })
+
+/** Diálogo: dois personagens alternando; [quem, inglês, português] */
+export function dlg(
+  title: string,
+  scene: string,
+  emoji: string,
+  names: [string, string],
+  lines: [who: 'A' | 'B', en: string, pt: string][],
+): Dialogue {
+  return { title, scene, emoji, lines: lines.map(([who, en, pt]) => ({ who, name: who === 'A' ? names[0] : names[1], en, pt })) }
+}
 
 const slug = (s: string) =>
   s

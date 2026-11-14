@@ -49,7 +49,7 @@ export const b1Modules = [
   mod(
     {
       id: 'b1-modals', level: 'B1', audiences: TA, title: 'Verbos modais', subtitle: 'Can, could, should, must, might, would...',
-      emoji: '🎛️', category: 'Gramática', photo: 'traffic signs road',
+      emoji: '🎛️', category: 'Gramática',
       lesson: [
         sec('Como funcionam', 'Modais mudam o "tom" do verbo: habilidade, permissão, obrigação, conselho, possibilidade. Regras: não ganham -S ("she can"), não usam "do" (Can you...?) e o verbo seguinte vem sem "to" ("I must go").'),
         sec('Escala de certeza', 'Do mais certo ao menos certo: must (deve ser) → should (provavelmente) → may/might/could (talvez) → can\'t (impossível).'),

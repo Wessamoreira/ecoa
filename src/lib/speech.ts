@@ -64,10 +64,32 @@ export function pickVoice(accent: Accent, preferredURI?: string) {
   return rankedVoices(accent)[0]
 }
 
+const FEMALE = /\b(samantha|ava|zoe|allison|susan|serena|kate|jenny|aria|sonia|libby|emma|michelle|karen|moira|tessa|fiona|victoria|joanna|salli|kendra|kimberly|ivy|female|natasha|clara|nicky|shelley|sandy|flo)\b/i
+const MALE = /\b(daniel|tom|evan|nathan|oliver|guy|ryan|andrew|brian|alex|aaron|arthur|gordon|joey|justin|matthew|eric|christopher|roger|davis|tony|male|rishi|reed|eddy|rocko)\b/i
+const genderOf = (v: SpeechSynthesisVoice) => (FEMALE.test(v.name) ? 'f' : MALE.test(v.name) ? 'm' : '?')
+
+/**
+ * Duas vozes para diálogos: a melhor disponível para A e, para B, a melhor de
+ * gênero diferente. Sem uma segunda voz boa, B usa a mesma com tom mais grave.
+ */
+export function voicePair(accent: Accent, preferredURI?: string): [{ voiceURI?: string; pitch: number }, { voiceURI?: string; pitch: number }] {
+  const ranked = rankedVoices(accent).filter((v) => voiceScore(v, accent) > 0)
+  const a = (preferredURI && voices.find((v) => v.voiceURI === preferredURI)) || ranked[0]
+  if (!a) return [{ pitch: 1 }, { pitch: 0.82 }]
+  const ga = genderOf(a)
+  const minScore = voiceScore(a, accent) - 40
+  const b =
+    ranked.find((v) => v !== a && genderOf(v) !== ga && genderOf(v) !== '?' && voiceScore(v, accent) >= minScore) ??
+    ranked.find((v) => v !== a && voiceScore(v, accent) >= minScore)
+  return [{ voiceURI: a.voiceURI, pitch: 1 }, b ? { voiceURI: b.voiceURI, pitch: 1 } : { voiceURI: a.voiceURI, pitch: 0.82 }]
+}
+
 export interface SpeakOptions {
   rate?: number
   accent?: Accent
   voiceURI?: string
+  /** 1 = natural. Usado para diferenciar personagens quando só existe uma voz */
+  pitch?: number
   onStart?: () => void
   /** índice do caractere da palavra sendo falada */
   onWord?: (charIndex: number) => void
@@ -95,7 +117,7 @@ export function speak(text: string, opts: SpeakOptions = {}): () => void {
   if (voice) u.voice = voice
   u.lang = voice?.lang ?? accent
   u.rate = rate
-  u.pitch = 1
+  u.pitch = opts.pitch ?? 1
 
   let gotBoundary = false
   let timers: number[] = []

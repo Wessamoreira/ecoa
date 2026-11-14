@@ -9,7 +9,7 @@ export const b2c1Modules = [
   mod(
     {
       id: 'b2-phrasal', level: 'B2', audiences: TA, title: 'Phrasal verbs essenciais', subtitle: 'Os 30 mais usados no dia a dia e no trabalho',
-      emoji: '🧲', category: 'Verbos', photo: 'magnets',
+      emoji: '🧲', category: 'Verbos',
       lesson: [
         sec('O que são', 'Verbo + partícula (up, out, off, on...) que juntos ganham um significado novo: "give" = dar, "give up" = desistir. São a alma do inglês falado — nativos preferem "find out" a "discover".'),
         sec('Separáveis × inseparáveis', 'Alguns aceitam o objeto no meio: "turn the TV off" / "turn off the TV". Com pronome, ele OBRIGATORIAMENTE vai no meio: "turn it off" (nunca "turn off it"). Outros não se separam: "look after the kids".'),
@@ -159,7 +159,7 @@ export const b2c1Modules = [
   mod(
     {
       id: 'c1-collocations', level: 'C1', audiences: TA, title: 'Collocations', subtitle: 'Combinações que soam naturais',
-      emoji: '🧷', category: 'Fluência', photo: 'puzzle pieces',
+      emoji: '🧷', category: 'Fluência',
       lesson: [sec('O segredo da naturalidade', 'Nativos dizem "heavy rain" (não "strong rain"), "make a decision" (não "take a decision" nos EUA) e "pay attention". Gramática correta com collocation errada ainda soa estrangeira.')],
     },
     [

@@ -7,7 +7,7 @@ export const a1Modules = [
   mod(
     {
       id: 'a1-tobe', level: 'A1', audiences: TA, title: 'Verbo To Be', subtitle: 'Ser e estar no presente, passado e futuro',
-      emoji: '🧩', category: 'Gramática', photo: 'coffee shop interior',
+      emoji: '🧩', category: 'Gramática',
       lesson: [
         sec('Um verbo, dois sentidos', '"To be" significa SER e ESTAR. É o verbo mais usado do inglês e a base de vários tempos verbais (como o Present Continuous e a voz passiva).'),
         sec('Presente', 'Afirmativa, negativa e interrogativa. Na interrogativa, o verbo troca de lugar com o sujeito — não usamos "do".', [
@@ -72,7 +72,7 @@ export const a1Modules = [
   mod(
     {
       id: 'a1-pronouns', level: 'A1', audiences: TA, title: 'Pronomes', subtitle: 'Sujeito, objeto, possessivos e reflexivos',
-      emoji: '👤', category: 'Gramática', photo: 'name tags',
+      emoji: '👤', category: 'Gramática',
       lesson: [
         sec('O mapa dos pronomes', 'Cada pessoa tem 5 formas. O sujeito faz a ação, o objeto recebe a ação, o adjetivo possessivo vem antes de um substantivo e o pronome possessivo substitui o substantivo.', [
           ['Sujeito', 'Objeto', 'Adj. possessivo', 'Pron. possessivo', 'Reflexivo'],
@@ -121,7 +121,7 @@ export const a1Modules = [
   mod(
     {
       id: 'a1-regular', level: 'A1', audiences: TA, title: 'Verbos regulares essenciais', subtitle: 'Os 20 verbos do dia a dia + o som do -ED',
-      emoji: '⚙️', category: 'Verbos', photo: 'gears machine',
+      emoji: '⚙️', category: 'Verbos',
       lesson: [
         sec('Passado com -ED', 'Verbos regulares formam o passado e o particípio com -ED: work → worked. A grafia segue regras: like → liked (só +d), study → studied (y vira i), stop → stopped (dobra a consoante).'),
         sec('Os três sons do -ED', 'Este é o erro nº 1 de pronúncia de brasileiros: o -ED quase nunca é "id"!', [
@@ -192,7 +192,7 @@ export const a1Modules = [
   mod(
     {
       id: 'a1-present', level: 'A1', audiences: TA, title: 'Simple Present', subtitle: 'Rotinas, fatos e o auxiliar do/does',
-      emoji: '🔁', category: 'Gramática', photo: 'morning coffee routine',
+      emoji: '🔁', category: 'Gramática',
       lesson: [
         sec('Quando usar', 'Para hábitos, rotinas, fatos e verdades gerais: "I drink coffee every morning", "Water boils at 100°C".'),
         sec('Estrutura', 'Na negativa e na pergunta entra o auxiliar DO (ou DOES para he/she/it) — e o verbo principal volta para a forma base.', [

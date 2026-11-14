@@ -66,6 +66,16 @@ export default defineConfig({
             },
           },
           {
+            // Buscas de fotos reais (resultado em JSON)
+            urlPattern: ({ url }) => url.hostname === 'api.openverse.org' && url.pathname === '/v1/images/',
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'ecoa-photo-search',
+              expiration: { maxEntries: 300, maxAgeSeconds: 60 * 60 * 24 * 60 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+          {
             // Dicionário online (IPA + gravações humanas de pronúncia)
             urlPattern: ({ url }) => url.hostname === 'api.dictionaryapi.dev',
             handler: 'CacheFirst',

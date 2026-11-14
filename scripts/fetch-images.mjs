@@ -56,6 +56,8 @@ async function fluent() {
 // ───────────── 2. Fotos de capa (Openverse)
 async function photos() {
   const out = { ...previous.photos }
+  // Módulo sem "photo" usa a capa ilustrada: remove foto antiga, se houver
+  for (const id of Object.keys(out)) if (!MODULES.find((m) => m.id === id)?.photo) delete out[id]
   for (const m of MODULES) {
     if (!m.photo || m.audiences.every((a) => a === 'kids')) continue
     if (out[m.id]?.query === m.photo) continue

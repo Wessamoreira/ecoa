@@ -15,7 +15,8 @@ Curso completo de inglês do A1 ao C1 com flashcards de repetição espaçada (F
 | Voz | Web Speech API, com ranking de vozes neurais (Natural, Premium, Siri, Google) e destaque palavra por palavra |
 | Fala do aluno | SpeechRecognition + avaliação palavra por palavra (nota de 0 a 100) |
 | Gravações humanas | Free Dictionary API (Wiktionary / Wikimedia Commons) |
-| Imagens | Microsoft Fluent Emoji 3D (MIT), Twemoji (CC BY) e fotos CC do Openverse |
+| Imagens | Microsoft Fluent Emoji 3D (MIT), Twemoji (CC BY), capas ilustradas geradas e fotos CC do Openverse (capas + "Ver fotos reais") |
+| Diálogos | 26 conversas com duas vozes, tradução opcional e treino de fala por linha |
 
 ## Estrutura
 
@@ -27,10 +28,11 @@ Curso completo de inglês do A1 ao C1 com flashcards de repetição espaçada (F
 ├── public/                  # logo.svg + ícones gerados (192, 512, maskable, apple)
 ├── scripts/fetch-images.mjs # busca ilustrações 3D e fotos livres → src/data/media.json
 └── src/
-    ├── data/                # BASE DO CURSO (553 cards, 50 módulos)
-    │   ├── kids.ts          # modo Criança (A1–B1)
-    │   ├── a1.ts a2.ts b1.ts b2c1.ts   # núcleo Teen + Adulto
-    │   ├── tracks.ts        # módulos exclusivos Teen e Adulto
+    ├── data/                # BASE DO CURSO (871 cards, 81 módulos, 26 diálogos)
+    │   ├── kids.ts kids2.ts # modo Criança (A1–B1)
+    │   ├── a1.ts a2.ts b1.ts b2c1.ts core2.ts core3.ts  # núcleo Teen + Adulto
+    │   ├── tracks.ts tracks2.ts  # módulos exclusivos Teen e Adulto
+    │   ├── dialogues.ts     # diálogos com duas vozes, por módulo
     │   ├── helpers.ts       # w(), irr(), reg(), mod(): escrita compacta de cards
     │   ├── index.ts         # modos, níveis, ordem da trilha
     │   └── media.json       # URLs das imagens + atribuições (gerado)

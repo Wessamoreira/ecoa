@@ -40,6 +40,22 @@ export interface LessonSection {
   examples?: Example[]
 }
 
+export interface DialogueLine {
+  /** Quem fala: "A" ou "B" (vozes diferentes) */
+  who: 'A' | 'B'
+  name: string
+  en: string
+  pt: string
+}
+
+export interface Dialogue {
+  title: string
+  /** Onde a conversa acontece */
+  scene: string
+  emoji: string
+  lines: DialogueLine[]
+}
+
 export interface Module {
   id: string
   level: Level
@@ -51,5 +67,6 @@ export interface Module {
   /** Termo em inglês usado para buscar a foto de capa em bancos livres */
   photo?: string
   lesson: LessonSection[]
+  dialogue?: Dialogue
   cards: Card[]
 }
