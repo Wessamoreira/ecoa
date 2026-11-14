@@ -1,4 +1,4 @@
-import { ArrowLeft, BookOpen, Layers, Printer, Sparkles } from 'lucide-react'
+import { ArrowLeft, BookOpen, Layers, MessageCircle, Printer, Sparkles } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 import { audienceInfo, moduleById, type Card } from '../data/index.ts'
@@ -14,6 +14,16 @@ import { Button, LevelBadge, Sheet } from '../components/ui.tsx'
 import { DialoguePlayer } from '../components/DialoguePlayer.tsx'
 import { ModuleArt } from '../components/ModuleArt.tsx'
 import type { Module } from '../data/index.ts'
+
+/** Título de seção; a margem de rolagem compensa o cabeçalho e a barra de ações grudados */
+function SectionTitle({ id, title, meta }: { id: string; title: string; meta?: string }) {
+  return (
+    <div id={id} className="mb-3 mt-10 flex scroll-mt-[calc(var(--header-h)+84px)] items-baseline gap-2.5 lg:scroll-mt-24">
+      <h2 className="text-2xl font-bold">{title}</h2>
+      {meta && <span className="text-sm font-semibold text-muted">{meta}</span>}
+    </div>
+  )
+}
 
 /** No celular, cada linha da tabela vira um cartão "coluna: valor" (sem rolagem lateral) */
 function LessonTableCards({ table }: { table: string[][] }) {
@@ -128,13 +138,41 @@ export default function ModulePage() {
         </Button>
       </div>
 
-      {/* Lição */}
-      <section className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
+      {/* Atalhos para as seções da página */}
+      <nav aria-label="Seções do módulo" className="mt-5 flex flex-wrap gap-2">
+        {(
+          [
+            { id: 'licao', label: 'Lição', Icon: BookOpen, show: true },
+            { id: 'dialogo', label: 'Diálogo', Icon: MessageCircle, show: !!m.dialogue },
+            { id: 'cards', label: `Cards (${m.cards.length})`, Icon: Layers, show: true },
+          ] as const
+        )
+          .filter((s) => s.show)
+          .map(({ id, label, Icon }) => (
+            <a
+              key={id}
+              href={`#${id}`}
+              onClick={(e) => {
+                e.preventDefault()
+                document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+              }}
+              className="inline-flex h-9 items-center gap-1.5 rounded-full border border-line bg-surface px-3.5 text-sm font-semibold text-muted transition hover:border-accent hover:text-ink"
+            >
+              <Icon size={15} />
+              {label}
+            </a>
+          ))}
+      </nav>
+
+      {/* Lição: explicações em ordem de leitura */}
+      <SectionTitle id="licao" title="Lição" meta={`${m.lesson.length} ${m.lesson.length === 1 ? 'explicação' : 'explicações'}`} />
+      <section className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         {m.lesson.map((s, i) => (
           <article key={i} className={cx('min-w-0 rounded-[24px] border border-line bg-surface p-5 sm:p-6', s.table && 'lg:col-span-2')}>
-            <h2 className="flex items-center gap-2 text-xl font-bold">
-              <BookOpen size={18} className="text-accent" /> {s.title}
-            </h2>
+            <h3 className="flex items-start gap-3 text-xl font-bold leading-snug">
+              <span className="mt-0.5 grid size-7 shrink-0 place-items-center rounded-full bg-accent-soft font-display text-sm font-bold">{i + 1}</span>
+              {s.title}
+            </h3>
             <p className="mt-2 leading-relaxed text-[1.02rem]">{s.body}</p>
             {s.table && <LessonTableCards table={s.table} />}
             {s.table && (
@@ -170,16 +208,15 @@ export default function ModulePage() {
       </section>
 
       {m.dialogue && (
-        <div className="mt-8">
+        <>
+          <SectionTitle id="dialogo" title="Diálogo" meta="ouça e pratique" />
           <DialoguePlayer d={m.dialogue} />
-        </div>
+        </>
       )}
 
       {/* Cards */}
-      <section className="mt-8">
-        <h2 className="mb-3 text-xl font-bold">
-          {m.cards.length} cards <span className="text-base font-semibold text-muted">· {seen} vistos</span>
-        </h2>
+      <SectionTitle id="cards" title="Cards" meta={`${m.cards.length} no total · ${seen} vistos`} />
+      <section>
         <ul className={cx('grid gap-2.5', kids ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4' : 'sm:grid-cols-2')}>
           {m.cards.map((c) => (
             <li key={c.id}>

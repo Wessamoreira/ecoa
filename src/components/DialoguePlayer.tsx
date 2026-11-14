@@ -35,6 +35,8 @@ export function DialoguePlayer({ d }: { d: Dialogue }) {
   const [showPt, setShowPt] = useState(true)
   const [practice, setPractice] = useState<number | null>(null)
   const chain = useRef(false)
+  // A velocidade usada pela sequência precisa ser lida na hora de cada fala (o estado pode estar atrasado)
+  const slowRef = useRef(false)
 
   useEffect(() => () => stopSpeaking(), [])
 
@@ -56,7 +58,7 @@ export function DialoguePlayer({ d }: { d: Dialogue }) {
       accent,
       voiceURI: v.voiceURI,
       pitch: v.pitch,
-      rate: rate * (slow ? 0.75 : 1),
+      rate: rate * (slowRef.current ? 0.75 : 1),
       onWord: setCharIdx,
       onEnd: () => {
         if (continueAfter && chain.current && i + 1 < d.lines.length) {
@@ -72,8 +74,11 @@ export function DialoguePlayer({ d }: { d: Dialogue }) {
     })
   }
 
-  const playAll = () => {
-    if (playingAll) return stop()
+  /** Toca o diálogo inteiro na velocidade escolhida. Tocar de novo no mesmo botão para. */
+  const playAll = (slowMode: boolean) => {
+    if (playingAll && slow === slowMode) return stop()
+    setSlow(slowMode)
+    slowRef.current = slowMode
     chain.current = true
     setPlayingAll(true)
     setPractice(null)
@@ -82,38 +87,53 @@ export function DialoguePlayer({ d }: { d: Dialogue }) {
 
   return (
     <section className="overflow-hidden rounded-[26px] border border-line bg-surface">
-      <header className="flex flex-wrap items-center gap-3 border-b border-line px-5 py-4">
-        <span className="grid size-12 place-items-center rounded-2xl bg-accent-soft">
-          <Illustration emoji={d.emoji} size={34} />
-        </span>
-        <div className="min-w-0 flex-1">
-          <p className="text-xs font-bold uppercase tracking-[0.12em] text-muted">Diálogo · {d.scene}</p>
-          <h2 className="font-display text-xl font-bold leading-tight">{d.title}</h2>
+      <header className="border-b border-line px-5 pb-4 pt-5">
+        <div className="flex items-center gap-3">
+          <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-accent-soft">
+            <Illustration emoji={d.emoji} size={34} />
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-muted">{d.scene}</p>
+            <h2 className="font-display text-xl font-bold leading-tight text-balance">{d.title}</h2>
+          </div>
         </div>
         {ttsSupported && (
-          <div className="flex items-center gap-1.5">
+          <div className="mt-4 flex items-center gap-2">
             <button
-              onClick={() => setSlow((s) => !s)}
-              aria-pressed={slow}
-              title="Velocidade lenta (0.75x)"
-              className={cx('grid size-10 place-items-center rounded-full border transition', slow ? 'border-accent bg-accent-soft text-ink' : 'border-line text-muted hover:text-ink')}
+              onClick={() => playAll(false)}
+              className={cx(
+                'relative inline-flex h-11 min-w-0 flex-1 items-center justify-center gap-2 rounded-full bg-accent px-4 font-semibold text-accent-ink transition active:scale-95',
+                playingAll && !slow && 'speaking-ring',
+              )}
             >
-              <Snail size={18} />
+              {playingAll && !slow ? <Pause size={17} fill="currentColor" /> : <Play size={17} fill="currentColor" />}
+              {playingAll && !slow ? 'Parar' : 'Ouvir'}
+            </button>
+            <button
+              onClick={() => playAll(true)}
+              title="Ouvir o diálogo devagar (0.75x)"
+              className={cx(
+                'relative inline-flex h-11 min-w-0 flex-1 items-center justify-center gap-2 rounded-full border-2 px-4 font-semibold transition active:scale-95',
+                playingAll && slow ? 'speaking-ring border-accent bg-accent-soft text-ink' : 'border-line text-ink hover:border-accent',
+              )}
+            >
+              {playingAll && slow ? <Pause size={17} fill="currentColor" /> : <Snail size={18} />}
+              {playingAll && slow ? 'Parar' : 'Devagar'}
             </button>
             <button
               onClick={() => setShowPt((s) => !s)}
               aria-pressed={showPt}
-              title="Mostrar tradução"
-              className={cx('grid size-10 place-items-center rounded-full border transition', showPt ? 'border-accent bg-accent-soft text-ink' : 'border-line text-muted hover:text-ink')}
+              aria-label={showPt ? 'Esconder tradução' : 'Mostrar tradução'}
+              title={showPt ? 'Esconder tradução' : 'Mostrar tradução'}
+              className={cx('grid size-11 shrink-0 place-items-center rounded-full border-2 transition', showPt ? 'border-accent bg-accent-soft text-ink' : 'border-line text-muted hover:text-ink')}
             >
               <Languages size={18} />
             </button>
-            <button onClick={playAll} className={cx('inline-flex h-10 items-center gap-2 rounded-full bg-accent px-4 font-semibold text-accent-ink transition active:scale-95', playingAll && 'speaking-ring relative')}>
-              {playingAll ? <Pause size={17} fill="currentColor" /> : <Play size={17} fill="currentColor" />}
-              {playingAll ? 'Parar' : 'Ouvir tudo'}
-            </button>
           </div>
         )}
+        <p className="mt-2.5 text-xs text-muted">
+          Toque numa fala para ouvir só ela{slow ? ' (devagar)' : ''}. O microfone ao lado serve para praticar.
+        </p>
       </header>
 
       <ol className="space-y-3 px-4 py-5 sm:px-5">
@@ -164,9 +184,6 @@ export function DialoguePlayer({ d }: { d: Dialogue }) {
           )
         })}
       </ol>
-      <p className="border-t border-line px-5 py-3 text-xs text-muted">
-        Dica: ouça tudo uma vez, depois toque em cada fala e repita em voz alta (shadowing). Use o microfone para conferir a pronúncia.
-      </p>
     </section>
   )
 }

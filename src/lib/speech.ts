@@ -97,6 +97,7 @@ export interface SpeakOptions {
 }
 
 let currentToken = 0
+let liveUtterance: SpeechSynthesisUtterance | null = null
 
 export function stopSpeaking() {
   currentToken++
@@ -108,6 +109,8 @@ export function speak(text: string, opts: SpeakOptions = {}): () => void {
     opts.onEnd?.()
     return () => {}
   }
+  // Havia áudio tocando? (no Safari/iOS, speak() logo após cancel() pode ser descartado em silêncio)
+  const wasBusy = speechSynthesis.speaking || speechSynthesis.pending
   stopSpeaking()
   const token = currentToken
   const accent = opts.accent ?? 'en-US'
@@ -151,14 +154,24 @@ export function speak(text: string, opts: SpeakOptions = {}): () => void {
   }
   const finish = () => {
     clearTimers()
+    if (liveUtterance === u) liveUtterance = null
     if (token === currentToken) opts.onEnd?.()
   }
   u.onend = finish
   u.onerror = finish
 
-  // Chrome: retomar caso esteja "pausado" por inatividade
-  if (speechSynthesis.paused) speechSynthesis.resume()
-  speechSynthesis.speak(u)
+  // Guarda referência: no iOS, uma utterance coletada pelo GC para de emitir eventos
+  liveUtterance = u
+  const start = () => {
+    if (token !== currentToken) return
+    // Chrome: retomar caso esteja "pausado" por inatividade
+    if (speechSynthesis.paused) speechSynthesis.resume()
+    speechSynthesis.speak(u)
+  }
+  // Se nada tocava, fala na hora (o 1º áudio no iPhone precisa sair dentro do toque do usuário).
+  // Se algo tocava, espera o cancelamento assentar antes de falar de novo.
+  if (wasBusy) setTimeout(start, 120)
+  else start()
   return () => {
     clearTimers()
     stopSpeaking()
