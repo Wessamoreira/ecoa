@@ -105,21 +105,37 @@ export function Layout() {
           </header>
         )}
 
-        <main className={cx('mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-10', focus ? 'pt-[calc(0.75rem+var(--safe-top))] pb-8 lg:pt-6' : 'pt-5 pb-28 lg:py-10')}>
+        <main className={cx('mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-10', focus ? 'pt-[calc(0.75rem+var(--safe-top))] pb-8 lg:pt-6' : 'pt-5 pb-[calc(var(--tabbar-h)+1.5rem)] lg:py-10')}>
           <Outlet />
         </main>
       </div>
 
       {/* Navegação inferior (mobile) */}
       {!focus && (
-        <nav aria-label="Principal" className="no-print safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-line bg-bg/92 backdrop-blur-md lg:hidden">
+        <nav aria-label="Principal" className="no-print fixed inset-x-0 bottom-0 z-40 border-t border-line bg-bg/92 backdrop-blur-md lg:hidden">
           <div className="mx-auto grid max-w-lg grid-cols-5">
             {NAV.map(({ to, label, icon: Icon, end }) => (
-              <NavLink key={to} to={to} end={end} className={({ isActive }) => cx('flex h-16 flex-col items-center justify-center gap-1 text-[11px] font-bold transition', isActive ? 'text-ink' : 'text-muted')}>
+              <NavLink
+                key={to}
+                to={to}
+                end={end}
+                // A área de toque é a coluna inteira, até a borda da tela (inclui a faixa da barra de gestos)
+                className={({ isActive }) =>
+                  cx(
+                    'tabbar-item group flex select-none flex-col items-center justify-start gap-1 text-[11px] font-bold transition-colors [touch-action:manipulation]',
+                    isActive ? 'text-ink' : 'text-muted active:text-ink',
+                  )
+                }
+              >
                 {({ isActive }) => (
                   <>
-                    <span className={cx('grid h-8 w-12 place-items-center rounded-full transition', isActive && 'bg-accent text-accent-ink')}>
-                      <Icon size={19} />
+                    <span
+                      className={cx(
+                        'grid h-8 w-14 place-items-center rounded-full transition group-active:scale-90',
+                        isActive ? 'bg-accent text-accent-ink' : 'group-active:bg-surface-2',
+                      )}
+                    >
+                      <Icon size={20} />
                     </span>
                     {label}
                   </>

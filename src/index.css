@@ -236,6 +236,16 @@ button {
 :root {
   --safe-top: env(safe-area-inset-top, 0px);
   --header-h: calc(56px + var(--safe-top));
+  /* Menu inferior: conteúdo encosta mais na base. Da faixa de gestos do celular
+     (safe-area-inset-bottom) usamos só o necessário para não colidir com ela. */
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --tabbar-pad-bottom: max(8px, calc(var(--safe-bottom) - 14px));
+  --tabbar-h: calc(58px + var(--tabbar-pad-bottom));
+}
+.tabbar-item {
+  height: var(--tabbar-h);
+  padding-top: 8px;
+  padding-bottom: var(--tabbar-pad-bottom);
 }
 .under-header {
   top: var(--header-h);
