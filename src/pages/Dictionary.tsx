@@ -1,8 +1,8 @@
-import { Heart, Search, X } from 'lucide-react'
+import { Heart, Search, SlidersHorizontal, X } from 'lucide-react'
 import { useDeferredValue, useMemo, useState } from 'react'
 import { audienceInfo, cardsFor, levelOf, moduleById, type Card, type Level } from '../data/index.ts'
 import { speakable } from '../lib/speech.ts'
-import { normalize } from '../lib/utils.ts'
+import { cx, normalize } from '../lib/utils.ts'
 import { useApp } from '../store/useApp.ts'
 import { AudioButton } from '../components/Audio.tsx'
 import { CardDetails } from '../components/CardContent.tsx'
@@ -17,6 +17,15 @@ function matchesTense(c: Card, t: string) {
   if (t === 'Idiom') return c.pos === 'idiom'
   if (t === 'Conditional') return /conditional|first|second|third|zero|mixed/i.test(tags) || /conditional/i.test(c.term)
   return tags.includes(t)
+}
+
+function FilterGroup({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <p className="mb-1.5 text-[11px] font-bold uppercase tracking-[0.12em] text-muted">{label}</p>
+      <div className="flex flex-wrap gap-2">{children}</div>
+    </div>
+  )
 }
 
 function score(c: Card, q: string) {
@@ -42,6 +51,14 @@ export default function Dictionary() {
   const [favOnly, setFavOnly] = useState(false)
   const [limit, setLimit] = useState(80)
   const [open, setOpen] = useState<Card | null>(null)
+  const [showFilters, setShowFilters] = useState(false)
+  const activeCount = [level, category, tense].filter(Boolean).length
+  const clearFilters = () => {
+    setLevel(undefined)
+    setCategory(undefined)
+    setTense(undefined)
+    setFavOnly(false)
+  }
   const q = normalize(useDeferredValue(query))
 
   const all = useMemo(() => cardsFor(mode), [mode])
@@ -83,24 +100,44 @@ export default function Dictionary() {
             </button>
           )}
         </label>
-        <div className="no-scrollbar mt-3 flex gap-2 overflow-x-auto">
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setShowFilters((v) => !v)}
+            aria-expanded={showFilters}
+            className={cx('inline-flex h-9 items-center gap-1.5 rounded-full border px-3.5 text-sm font-semibold transition lg:hidden', showFilters || activeCount ? 'border-ink bg-ink text-bg' : 'border-line bg-surface text-muted')}
+          >
+            <SlidersHorizontal size={15} /> Filtros{activeCount ? ` (${activeCount})` : ''}
+          </button>
           <Chip active={favOnly} onClick={() => setFavOnly((v) => !v)}>
             <span className="inline-flex items-center gap-1"><Heart size={14} fill={favOnly ? 'currentColor' : 'none'} /> Favoritos</span>
           </Chip>
+          {activeCount > 0 && (
+            <button type="button" onClick={clearFilters} className="h-9 px-2 text-sm font-semibold text-muted underline underline-offset-4 hover:text-ink">
+              Limpar
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Painel de filtros: quebra linha em vez de rolar para o lado */}
+      <div className={cx('mt-1 space-y-3 rounded-[22px] border border-line bg-surface p-4 lg:block', showFilters ? 'block' : 'hidden')}>
+        <FilterGroup label="Nível">
           {info.levels.map((l) => (
             <Chip key={l} active={level === l} onClick={() => setLevel(level === l ? undefined : l)}>{l}</Chip>
           ))}
-          <span className="mx-1 w-px shrink-0 bg-line" />
+        </FilterGroup>
+        <FilterGroup label="Categoria">
           {categories.map((c) => (
             <Chip key={c} active={category === c} onClick={() => setCategory(category === c ? undefined : c)}>{c}</Chip>
           ))}
-        </div>
+        </FilterGroup>
         {mode !== 'kids' && (
-          <div className="no-scrollbar mt-2 flex gap-2 overflow-x-auto">
+          <FilterGroup label="Tempo verbal e tipo">
             {TENSES.map((t) => (
               <Chip key={t} active={tense === t} onClick={() => setTense(tense === t ? undefined : t)} className="!h-8 !text-xs">{t}</Chip>
             ))}
-          </div>
+          </FilterGroup>
         )}
       </div>
 

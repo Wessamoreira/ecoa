@@ -150,7 +150,7 @@ export default function Home() {
           <p className="text-sm text-muted">{modules.length} módulos · {cards.length} cards</p>
         </div>
 
-        <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 pb-1 lg:mx-0 lg:px-0" role="tablist" aria-label="Níveis">
+        <div className={cx('grid grid-cols-3 gap-2', info.levels.length > 3 && 'sm:grid-cols-5')} role="tablist" aria-label="Níveis">
           {info.levels.map((l) => {
             const lc = modules.filter((m) => m.level === l).flatMap((m) => m.cards)
             const pct = lc.length ? lc.filter((c) => srs[c.id]).length / lc.length : 0
@@ -162,15 +162,15 @@ export default function Home() {
                 aria-selected={on}
                 onClick={() => setLevel(l)}
                 className={cx(
-                  'flex min-w-[140px] shrink-0 flex-col gap-1.5 rounded-2xl border-2 px-4 py-3 text-left transition',
+                  'flex min-w-0 flex-col gap-1.5 rounded-2xl border-2 px-3 py-2.5 text-left transition sm:px-4 sm:py-3',
                   on ? 'border-accent bg-surface shadow-card' : 'border-line bg-surface/60 hover:border-muted/40',
                 )}
               >
-                <span className="flex items-baseline gap-2">
-                  <span className="font-display text-2xl font-bold leading-none">{l}</span>
-                  <span className="truncate text-xs font-bold text-muted">{Math.round(pct * 100)}%</span>
+                <span className="flex items-baseline justify-between gap-1">
+                  <span className="font-display text-xl font-bold leading-none sm:text-2xl">{l}</span>
+                  <span className="text-[11px] font-bold text-muted">{Math.round(pct * 100)}%</span>
                 </span>
-                <span className="truncate text-sm font-semibold">{info.levelNames[l]}</span>
+                <span className="truncate text-xs font-semibold sm:text-sm">{info.levelNames[l]}</span>
                 <Bar value={pct} className="h-1.5" />
               </button>
             )

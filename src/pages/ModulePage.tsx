@@ -15,6 +15,28 @@ import { DialoguePlayer } from '../components/DialoguePlayer.tsx'
 import { ModuleArt } from '../components/ModuleArt.tsx'
 import type { Module } from '../data/index.ts'
 
+/** No celular, cada linha da tabela vira um cartão "coluna: valor" (sem rolagem lateral) */
+function LessonTableCards({ table }: { table: string[][] }) {
+  const [head, ...rows] = table
+  return (
+    <ul className="mt-4 space-y-2 sm:hidden">
+      {rows.map((row, r) => (
+        <li key={r} className="rounded-2xl border border-line bg-bg px-4 py-3">
+          <p className="font-display text-[1.05rem] font-bold">{row[0]}</p>
+          <dl className="mt-1 space-y-1">
+            {row.slice(1).map((cell, j) => (
+              <div key={j} className="flex gap-2 text-sm">
+                {head[j + 1] && <dt className="w-28 shrink-0 text-muted">{head[j + 1]}</dt>}
+                <dd className="min-w-0 break-words font-semibold">{cell}</dd>
+              </div>
+            ))}
+          </dl>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
 /** O que o módulo contém, em uma linha */
 function ModuleMeta({ m, light }: { m: Module; light?: boolean }) {
   const items = [`${m.cards.length} cards`, `${m.lesson.length} ${m.lesson.length === 1 ? 'explicação' : 'explicações'}`, m.dialogue && 'diálogo com áudio']
@@ -89,14 +111,19 @@ export default function ModulePage() {
         </header>
       )}
 
-      <div className="under-header sticky z-20 -mx-4 mt-4 flex gap-2 overflow-x-auto bg-bg/90 px-4 py-2 backdrop-blur no-scrollbar lg:mx-0 lg:px-0">
-        <Button onClick={() => navigate(`/estudar?m=${m.id}`)}>
-          <Layers size={18} /> {seen < m.cards.length ? `Estudar · ${m.cards.length - seen} novos` : due ? `Revisar ${due}` : 'Revisar módulo'}
+      {/* Ações: cabem em qualquer largura (o botão principal encolhe, os outros viram só ícone em telas pequenas) */}
+      <div className="under-header sticky z-20 -mx-4 mt-4 flex gap-2 bg-bg/90 px-4 py-2 backdrop-blur lg:mx-0 lg:px-0">
+        <Button className="min-w-0 !shrink flex-1 sm:flex-none" onClick={() => navigate(`/estudar?m=${m.id}`)}>
+          <Layers size={18} className="shrink-0" />
+          <span className="truncate">{seen < m.cards.length ? 'Estudar' : due ? 'Revisar' : 'Revisar módulo'}</span>
+          {(seen < m.cards.length || due > 0) && (
+            <span className="shrink-0 rounded-full bg-accent-ink/20 px-2 py-0.5 text-xs font-bold">{seen < m.cards.length ? `${m.cards.length - seen} novos` : due}</span>
+          )}
         </Button>
-        <Button variant="secondary" onClick={() => navigate(`/quiz?m=${m.id}`)}>
-          <Sparkles size={18} /> Quiz
+        <Button variant="secondary" onClick={() => navigate(`/quiz?m=${m.id}`)} aria-label="Quiz do módulo">
+          <Sparkles size={18} /> <span className="hidden min-[400px]:inline">Quiz</span>
         </Button>
-        <Button variant="secondary" onClick={() => navigate(`/imprimir?m=${m.id}`)} aria-label="Imprimir folha de revisão">
+        <Button variant="secondary" className="!px-3.5 sm:!px-5" onClick={() => navigate(`/imprimir?m=${m.id}`)} aria-label="Imprimir folha de revisão">
           <Printer size={18} /> <span className="hidden sm:inline">Imprimir</span>
         </Button>
       </div>
@@ -109,9 +136,10 @@ export default function ModulePage() {
               <BookOpen size={18} className="text-accent" /> {s.title}
             </h2>
             <p className="mt-2 leading-relaxed text-[1.02rem]">{s.body}</p>
+            {s.table && <LessonTableCards table={s.table} />}
             {s.table && (
-              <div className="mt-4 overflow-x-auto rounded-2xl border border-line">
-                <table className="w-full min-w-[420px] text-left text-sm">
+              <div className="mt-4 hidden overflow-hidden rounded-2xl border border-line sm:block">
+                <table className="w-full text-left text-sm">
                   <thead className="bg-surface-2">
                     <tr>{s.table[0].map((h, j) => <th key={j} className="px-3 py-2 font-bold">{h}</th>)}</tr>
                   </thead>

@@ -78,14 +78,14 @@ export function RealPhotos({ query }: { query: string }) {
 
   return (
     <div onClick={(e) => e.stopPropagation()}>
-      <div className="no-scrollbar -mx-1 flex snap-x gap-2 overflow-x-auto px-1 pb-1">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
         {photos.map((p) => (
           <a
             key={p.id}
             href={p.source}
             target="_blank"
             rel="noreferrer"
-            className="group relative h-32 w-44 shrink-0 snap-start overflow-hidden rounded-2xl bg-surface-2"
+            className="group relative h-28 overflow-hidden rounded-2xl bg-surface-2 sm:h-32"
             title={`${p.title}${p.creator ? ` — ${p.creator}` : ''} (${p.license})`}
           >
             <img src={p.thumb} alt={p.title} loading="lazy" className="size-full object-cover transition group-hover:scale-105" />

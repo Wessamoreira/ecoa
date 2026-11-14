@@ -85,10 +85,10 @@ export default function Progress() {
             {hovered ? `${hovered.date.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: 'short' })}: ${hovered.n} atividade${hovered.n === 1 ? '' : 's'}` : `Últimas ${WEEKS} semanas`}
           </p>
         </div>
-        <div className="no-scrollbar overflow-x-auto">
-          <div className="flex gap-[3px]" role="img" aria-label="Mapa de atividade diária">
+        <div>
+          <div className="flex w-full gap-[3px] sm:w-auto" role="img" aria-label="Mapa de atividade diária">
             {grid.map((col, w) => (
-              <div key={w} className="flex flex-col gap-[3px]">
+              <div key={w} className="flex min-w-0 flex-1 flex-col gap-[3px] sm:flex-none">
                 {col.map((c) => (
                   <div
                     key={c.key}
@@ -96,7 +96,7 @@ export default function Progress() {
                     onMouseLeave={() => setHover(null)}
                     onClick={() => setHover(c.key)}
                     title={`${c.date.toLocaleDateString('pt-BR')}: ${c.n}`}
-                    className="size-[15px] rounded-[4px] sm:size-4"
+                    className="aspect-square w-full rounded-[3px] sm:size-4 sm:rounded-[4px]"
                     style={{ background: cellColor(levelFor(c.n)), outline: hover === c.key ? '2px solid var(--ink)' : undefined, outlineOffset: 1 }}
                   />
                 ))}
